@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Algorithm Visualizer Pro</title>
+    <meta
+      name="description"
+      content="Interactive visualizations for sorting and pathfinding algorithms"
+    />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📊</text></svg>"
+    />
+  </head>
+  <body>
+    <div class="app-container">
+      <header class="app-header">
+        <div class="logo-container">
+          <div class="logo">Algorithm Visualizer</div>
+          <span class="logo-badge">Pro</span>
+        </div>
+        <button
+          class="mode-toggle"
+          id="modeToggle"
+          aria-label="Toggle Dark Mode"
+        >
+          <span class="mode-icon">🌙</span>
+        </button>
+      </header>
+
+      <main class="content-container">
+        <!-- Visualization area at the top -->
+        <div class="visualization-container">
+          <canvas id="canvas"></canvas>
+        </div>
+
+        <!-- Separate legend container -->
+        <div class="legend-container">
+          <div class="legend" id="legend">
+            <!-- For sorting algorithms -->
+            <div class="legend-item">
+              <div class="legend-color" style="background-color: #f72585"></div>
+              Active
+            </div>
+            <div class="legend-item">
+              <div class="legend-color" style="background-color: #4cc9f0"></div>
+              Sorted
+            </div>
+            <div class="legend-item">
+              <div class="legend-color" style="background-color: #4361ee"></div>
+              Unsorted
+            </div>
+
+            <!-- For pathfinding algorithms (add/remove with JavaScript) -->
+            <!--
+            <div class="legend-item"><div class="legend-color" style="background-color: #4ade80;"></div>Start</div>
+            <div class="legend-item"><div class="legend-color" style="background-color: #f72585;"></div>End</div>
+            <div class="legend-item"><div class="legend-color" style="background-color: #1e293b;"></div>Wall</div>
+            <div class="legend-item"><div class="legend-color" style="background-color: #4cc9f0;"></div>Visited</div>
+            <div class="legend-item"><div class="legend-color" style="background-color: #f59e0b;"></div>Path</div>
+            -->
+          </div>
+        </div>
+
+        <!-- Controls and panels below visualization -->
+        <div class="controls-area">
+          <div class="control-panels">
+            <!-- Algorithm panel -->
+            <div class="panel algorithm-panel">
+              <div class="panel-header">
+                <div class="panel-icon">📊</div>
+                <h2 class="panel-title">Algorithm</h2>
+              </div>
+
+              <div class="panel-content">
+                <div class="form-group">
+                  <label for="algorithmType">Algorithm Type</label>
+                  <select id="algorithmType" aria-label="Select Algorithm Type">
+                    <option value="sorting">Sorting</option>
+                    <option value="pathfinding">Pathfinding</option>
+                  </select>
+                </div>
+
+                <div id="sortingAlgorithms" class="form-group">
+                  <label for="sortingAlgorithm">Sorting Algorithm</label>
+                  <select
+                    id="sortingAlgorithm"
+                    aria-label="Select Sorting Algorithm"
+                  >
+                    <option value="bubble">Bubble Sort</option>
+                    <option value="selection">Selection Sort</option>
+                    <option value="insertion">Insertion Sort</option>
+                    <option value="quick">Quick Sort</option>
+                    <option value="merge">Merge Sort</option>
+                  </select>
+                </div>
+
+                <div
+                  id="pathfindingAlgorithms"
+                  class="form-group"
+                  style="display: none"
+                >
+                  <label for="pathfindingAlgorithm"
+                    >Pathfinding Algorithm</label
+                  >
+                  <select
+                    id="pathfindingAlgorithm"
+                    aria-label="Select Pathfinding Algorithm"
+                  >
+                    <option value="dijkstra">Dijkstra's Algorithm</option>
+                    <option value="astar">A* Algorithm</option>
+                    <option value="bfs">Breadth-First Search</option>
+                    <option value="dfs">Depth-First Search</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <!-- Controls panel -->
+            <div class="panel controls-panel">
+              <div class="panel-header">
+                <div class="panel-icon">🎮</div>
+                <h2 class="panel-title">Controls</h2>
+              </div>
+
+              <div class="panel-content">
+                <div class="button-row">
+                  <button
+                    id="playBtn"
+                    class="control-btn play-btn"
+                    aria-label="Play Visualization"
+                  >
+                    <span class="btn-icon">▶</span>
+                    <span class="btn-text">Play</span>
+                  </button>
+                  <button
+                    id="pauseBtn"
+                    class="control-btn pause-btn"
+                    disabled
+                    aria-label="Pause Visualization"
+                  >
+                    <span class="btn-icon">⏸</span>
+                    <span class="btn-text">Pause</span>
+                  </button>
+                </div>
+
+                <div class="button-row">
+                  <button
+                    id="stepBtn"
+                    class="control-btn step-btn"
+                    aria-label="Step Through Visualization"
+                  >
+                    <span class="btn-icon">⏩</span>
+                    <span class="btn-text">Step</span>
+                  </button>
+                  <button
+                    id="resetBtn"
+                    class="control-btn reset-btn"
+                    aria-label="Reset Visualization"
+                  >
+                    <span class="btn-icon">↺</span>
+                    <span class="btn-text">Reset</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Customization panel -->
+            <div class="panel customization-panel">
+              <div class="panel-header">
+                <div class="panel-icon">⚙️</div>
+                <h2 class="panel-title">Customization</h2>
+              </div>
+
+              <div class="panel-content">
+                <div id="sortingCustomization">
+                  <div class="range-control">
+                    <div class="range-header">
+                      <label for="arraySize">Array Size</label>
+                      <div id="arraySizeValue" class="range-value">50</div>
+                    </div>
+                    <input
+                      type="range"
+                      id="arraySize"
+                      min="10"
+                      max="100"
+                      value="50"
+                      aria-label="Adjust Array Size"
+                    />
+                  </div>
+                </div>
+
+                <div id="pathfindingCustomization" style="display: none">
+                  <div class="range-control">
+                    <div class="range-header">
+                      <label for="gridSize">Grid Size</label>
+                      <div id="gridSizeValue" class="range-value">15 x 15</div>
+                    </div>
+                    <input
+                      type="range"
+                      id="gridSize"
+                      min="10"
+                      max="30"
+                      value="15"
+                      aria-label="Adjust Grid Size"
+                    />
+                  </div>
+                </div>
+
+                <div class="range-control">
+                  <div class="range-header">
+                    <label for="speed">Animation Speed</label>
+                    <div id="speedValue" class="range-value">Normal</div>
+                  </div>
+                  <input
+                    type="range"
+                    id="speed"
+                    min="1"
+                    max="5"
+                    value="3"
+                    aria-label="Adjust Animation Speed"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <!-- Info panel -->
+            <div class="panel info-panel">
+              <div class="panel-header">
+                <div class="panel-icon">ℹ️</div>
+                <h2 class="panel-title">Algorithm Info</h2>
+              </div>
+
+              <div class="panel-content">
+                <h3 id="algorithmTitle" class="algorithm-title">Bubble Sort</h3>
+                <div id="complexity" class="complexity-badge">
+                  Time: O(n²) | Space: O(1)
+                </div>
+                <p id="description" class="algorithm-description">
+                  Compares adjacent elements and swaps them if they're in the
+                  wrong order.
+                </p>
+                <div class="stats-container">
+                  <div class="stats-header">Statistics</div>
+                  <div class="stats">
+                    <div id="stat1" class="stat-item">
+                      Comparisons: <span class="stat-value">0</span>
+                    </div>
+                    <div id="stat2" class="stat-item">
+                      Swaps: <span class="stat-value">0</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <footer class="app-footer">
+        <div class="footer-content">
+          <a
+            href="https://github.com/yourusername/algorithm-visualizer"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="github-link"
+          >
+            <span class="github-icon">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+              >
+                <path
+                  d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"
+                />
+              </svg>
+            </span>
+            View on GitHub
+          </a>
+          <div class="copyright">© 2025 Algorithm Visualizer Pro</div>
+        </div>
+      </footer>
+    </div>
+
+    <script src="scripts/utils.js"></script>
+    <script src="scripts/algorithms/sorting.js"></script>
+    <script src="scripts/algorithms/pathfinding.js"></script>
+    <script src="scripts/visualizer.js"></script>
+    <script src="scripts/main.js"></script>
+  </body>
+</html>
